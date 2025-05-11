@@ -114,7 +114,7 @@ stages:
             displayName: "Files_Check"
           - script: terraform init -backend-config=backend.json
             displayName: "Terraform_Initialize"
-          - script: terraform plan -var-file="access.auto.tfvars"
+          - script: terraform plan -var="aws_access_key=$(aws-access-key)" -var="aws_secret_key=$(aws-secret-key)" --auto-approve
             displayName: "Terraform_Plan"
           - script: terraform apply -var="aws_access_key=$(aws-access-key)" -var="aws_secret_key=$(aws-secret-key)" --auto-approve
             displayName: "Terraform_Apply"
