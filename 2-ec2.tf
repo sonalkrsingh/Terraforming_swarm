@@ -1,7 +1,11 @@
 data "aws_ami" "my_ami" {
      most_recent      = true
-     name_regex       = "^Saikiran"
-     owners           = ["277403261692"]
+     owners           = ["self"]
+
+     filter {
+        name   = "name"
+        values = ["voting-app-base-*"] 
+    }
 }
 
 
@@ -17,7 +21,7 @@ resource "aws_instance" "web-1" {
     vpc_security_group_ids = ["${aws_security_group.allow_all.id}"]
     associate_public_ip_address = true	
     tags = {
-        Name = "Web-Server-0${count.index+1}"
+        Name = "VotingApp-Node-${count.index+1}"
         Env = "Prod"
         Owner = "sonal"
 	    CostCenter = "ABCD"
