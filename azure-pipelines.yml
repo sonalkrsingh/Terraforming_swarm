@@ -26,9 +26,9 @@ variables:
   - name: TERRAFORM_APPLY
     value: "NO"
   - name: ANSIBLEJOB
-    value: "YES"
-  - name: TERRAFORM_DESTROY
     value: "NO"
+  - name: TERRAFORM_DESTROY
+    value: "YES"
   #- DESTROY: 'NO' #- Without Variable Group.
   # PACKERBUILD: 'YES' - Without Variable Group.
   # We can pass variables between stages by exporting then as outputs. Refernce below
