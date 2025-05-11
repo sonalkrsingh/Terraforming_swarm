@@ -22,9 +22,9 @@ pool:
 variables:
   - group: AWS_ACCESS_GROUP
   - name: PACKERBUILD
-    value: "YES"
-  - name: TERRAFORM_APPLY
     value: "NO"
+  - name: TERRAFORM_APPLY
+    value: "YES"
   - name: ANSIBLEJOB
     value: "NO"
   - name: TERRAFORM_DESTROY
@@ -69,7 +69,7 @@ stages:
 
   - stage: "Download_Secure_Files_and_Terraform_Validate"
     displayName: "Terraform Validate & Download Secure Files"
-    condition: and(in(dependencies.Packer_Validate_Build.result, 'Succeeded', 'Skipped'), eq(variables.TERRAFORM_APPLY, 'YES'))
+    condition: and(in(dependencies.Build_Base_AMI.result, 'Succeeded', 'Skipped'), eq(variables.TERRAFORM_APPLY, 'YES'))
     jobs:
       - job: "Download_Secure_Files"
         displayName: "Download_Secure_Files"
@@ -94,7 +94,7 @@ stages:
 
   - stage: "Download_Secure_Files_and_Terraform_Plan_and_Apply"
     displayName: "Terraform Plan & Apply & Download Secure Files"
-    condition: and(in(dependencies.Packer_Validate_Build.result, 'Succeeded', 'Skipped'), eq(variables.TERRAFORM_DESTROY, 'NO'), eq(variables.TERRAFORM_APPLY, 'YES'))
+    condition: and(in(dependencies.Build_Base_AMI.result, 'Succeeded', 'Skipped'), eq(variables.TERRAFORM_DESTROY, 'NO'), eq(variables.TERRAFORM_APPLY, 'YES'))
     jobs:
       - job: "Download_Secure_Files_And_Terraform_Apply"
         displayName: "Download_Secure_Files_And_Terraform_Apply"
@@ -134,6 +134,7 @@ stages:
           - task: DownloadSecureFile@1
             inputs:
               secureFile: "SecOps-Key.pem"
+            displayName: "Download SSH Key"
           - task: CopyFiles@2
             inputs:
               SourceFolder: "$(Agent.TempDirectory)"
