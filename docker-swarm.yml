@@ -21,7 +21,7 @@
   become_user: root
   tasks:
     - name: Enable Docker Swarm on Master docker_servers
-      shell: docker swarm init
+      shell: docker swarm init --advertise-addr "{{ ansible_default_ipv4.address }}"
       ignore_errors: yes
     - name: Get Docker Worker Token
       shell: docker swarm join-token -q worker
@@ -40,7 +40,7 @@
         var: swarmmanager_token.stdout
       no_log: true
     - name: Get Docker Master Private IP
-      shell: curl http://169.254.169.254/latest/meta-data/local-ipv4/
+      shell: "hostname -I | awk '{print $1}'"
       register: private_ip
     - set_fact:
         swarm_ip: "{{ private_ip.stdout }}"
@@ -58,7 +58,6 @@
       add_host:
         name: "docker_master_managernode_token"
         shared_variable: "{{ swarmmanager_token }}"
-
   tags:
     - swarm
 
@@ -99,40 +98,79 @@
       ignore_errors: yes
   tags:
     - managers
-- name: Deploy Test Application
+
+- name: Deploy Voting App Microservices
   hosts: docker_master
   become: yes
   become_user: root
   vars:
     private_ip: "{{ hostvars['docker_master_node_ip']['shared_variable'] }}"
-    token: "{{ hostvars['docker_master_managernode_token']['shared_variable'] }}"
   tasks:
+    - name: Clean up any existing services
+      shell: |
+        docker service rm vote result worker redis db || true
+      ignore_errors: yes
+
+    - name: Create network for voting app
+      shell: docker network create --driver overlay voting_network
+
+    - name: Deploy Redis service
+      shell: |
+        docker service create \
+          --name redis \
+          --network voting_network \
+          --replicas 1 \
+          redis:alpine
+
+    - name: Deploy Postgres database
+      shell: |
+        docker service create \
+          --name db \
+          --network voting_network \
+          --replicas 1 \
+          -e POSTGRES_PASSWORD=postgres \
+          -e POSTGRES_USER=postgres \
+          --mount type=volume,source=db-data,target=/var/lib/postgresql/data \
+          postgres:9.4
+
+    - name: Deploy Voting UI
+      shell: |
+        docker service create \
+          --name vote \
+          --network voting_network \
+          --replicas 3 \
+          -p 5000:80 \
+          dockersamples/examplevotingapp_vote:latest
+
+    - name: Deploy Worker service
+      shell: |
+        docker service create \
+          --name worker \
+          --network voting_network \
+          --replicas 1 \
+          dockersamples/examplevotingapp_worker:latest
+
+    - name: Deploy Results UI
+      shell: |
+        docker service create \
+          --name result \
+          --network voting_network \
+          --replicas 1 \
+          -p 5001:80 \
+          dockersamples/examplevotingapp_result:latest
+
+    - name: Verify services are running
+      shell: docker service ls
+      register: services
     - debug:
-        var: token
-      no_log: true
+        var: services.stdout
+
+    - name: Print access URLs
+      shell: |
+        echo "Voting UI: http://{{ private_ip }}:5000" && \
+        echo "Results UI: http://{{ private_ip }}:5001"
+      register: app_urls
     - debug:
-        var: private_ip
-    - name: Delete Docker Service nginx001 If Exists
-      shell: docker service rm nginx001
-      ignore_errors: yes
-    - name: Delete Docker Service flask If Exists
-      shell: docker service rm flask
-      ignore_errors: yes
-    - name: Deploy Sample Application
-      shell: docker service create --name nginx001 -p 8000:80 --replicas 3 kiran2361993/kubegame:v2
-      ignore_errors: yes
-    - name: Deploy Sample Flask Application
-      shell: docker service create --name flask -p 5000:5000 --replicas 3 kiran2361993/mydb:v1
-      ignore_errors: yes
-    - name: Validate Deployment Nginx
-      shell: sleep 10 && curl http://"{{ private_ip.stdout }}":8000
-      register: html
-      ignore_errors: yes
-    - name: Validate Deployment Flask
-      shell: sleep 10 && curl http://"{{ private_ip.stdout }}":5000
-      register: html
-      ignore_errors: yes
-    - debug:
-        var: html.stdout
+        var: app_urls.stdout
   tags:
     - managers

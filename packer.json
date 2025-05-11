@@ -20,11 +20,13 @@
       "source_ami": "{{user `source_ami`}}",
       "instance_type": "{{user `instance_type`}}",
       "ssh_username": "ubuntu",
-      "ami_name": "Saikiran-Pinapathruni-Build-{{isotime | clean_resource_name}}",
+      "ami_name": "voting-app-base-{{isotime | clean_resource_name}}",
       "vpc_id": "{{user `vpc_id`}}",
       "subnet_id": "{{user `subnet_id`}}",
       "tags": {
-        "Name": "Saikiran-Pinapathruni-Build-{{isotime | clean_resource_name}}"
+        "Project": "VotingApp",
+        "Environment": "Prod",
+        "Owner": "sonal" 
       }
     }
   ],
@@ -34,16 +36,9 @@
       "inline": [
         "sleep 30",
         "sudo apt update -y",
-        "sudo apt install nginx -y",
-        "sudo apt install git -y",
-        "sudo git clone https://github.com/saikiranpi/webhooktesting.git",
-        "sudo rm -rf /var/www/html/index.nginx-debian.html",
-        "sudo cp webhooktesting/index.html /var/www/html/index.nginx-debian.html",
-        "sudo cp webhooktesting/style.css /var/www/html/style.css",
-        "sudo cp webhooktesting/scorekeeper.js /var/www/html/scorekeeper.js",
-        "sudo service nginx start",
-        "sudo systemctl enable nginx",
-        "curl https://get.docker.com | bash"
+        "sudo apt install -y docker.io",
+        "sudo usermod -aG docker ubuntu",
+        "sudo systemctl enable docker"
       ]
     },
     {

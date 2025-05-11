@@ -22,21 +22,21 @@ pool:
 variables:
   - group: AWS_ACCESS_GROUP
   - name: PACKERBUILD
-    value: "NO"
+    value: "YES"
   - name: TERRAFORM_APPLY
     value: "NO"
   - name: ANSIBLEJOB
     value: "NO"
   - name: TERRAFORM_DESTROY
-    value: "YES"
+    value: "NO"
   #- DESTROY: 'NO' #- Without Variable Group.
   # PACKERBUILD: 'YES' - Without Variable Group.
   # We can pass variables between stages by exporting then as outputs. Refernce below
   #https://www.reddit.com/r/azuredevops/comments/qlroi7/pass_variables_between_stages/
 
 stages:
-  - stage: "Packer_Validate_Build"
-    displayName: "Packer Validate & Build"
+  - stage: "Build_Base_AMI"
+    displayName: "Build Voting App Base AMI"
     condition: eq(variables.PACKERBUILD, 'YES')
     jobs:
       - job: "Download_Secure_Files"
@@ -49,7 +49,7 @@ stages:
             inputs:
               SourceFolder: "$(Agent.TempDirectory)"
               Contents: "**"
-              TargetFolder: "/home/adminsai/myagent/_work/2/s"
+              TargetFolder: "/home/adminsonal/myagent/_work/2/s"
           - script: pwd && ls -al
             displayName: "Files_Check"
 
@@ -109,7 +109,7 @@ stages:
             inputs:
               SourceFolder: "$(Agent.TempDirectory)"
               Contents: "**"
-              TargetFolder: "/home/adminsai/myagent/_work/2/s"
+              TargetFolder: "/home/adminsonal/myagent/_work/2/s"
           - script: pwd && ls -al
             displayName: "Files_Check"
           - script: terraform init -backend-config=backend.json
@@ -138,7 +138,7 @@ stages:
             inputs:
               SourceFolder: "$(Agent.TempDirectory)"
               Contents: "**"
-              TargetFolder: "/home/adminsai/myagent/_work/2/s"
+              TargetFolder: "/home/adminsonal/myagent/_work/2/s"
           - script: pwd && ls -al && chmod 400 SecOps-Key.pem
             displayName: "Files_Check"
           - script: ansible -i invfile all -m ping -u ubuntu
@@ -172,7 +172,7 @@ stages:
             inputs:
               SourceFolder: "$(Agent.TempDirectory)"
               Contents: "**"
-              TargetFolder: "/home/adminsai/myagent/_work/2/s"
+              TargetFolder: "/home/adminsonal/myagent/_work/2/s"
           - script: pwd && ls -al
             displayName: "Files_Check"
           - script: terraform init -backend-config=backend.json
