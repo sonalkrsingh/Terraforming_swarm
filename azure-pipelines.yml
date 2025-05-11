@@ -84,7 +84,7 @@ stages:
             inputs:
               SourceFolder: "$(Agent.TempDirectory)"
               Contents: "**"
-              TargetFolder: "/home/adminsai/myagent/_work/2/s"
+              TargetFolder: "/home/adminsonal/myagent/_work/2/s"
           - script: pwd && ls -al && echo $COMMIT_MESG
             displayName: "Files_Check"
           - script: terraform init -backend-config=backend.json
