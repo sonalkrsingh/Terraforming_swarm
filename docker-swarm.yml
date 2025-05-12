@@ -13,17 +13,37 @@
         state: started
         enabled: yes
 
+    - name: Wait for Docker daemon to be ready
+      ansible.builtin.command: docker info
+      register: docker_ready
+      until: docker_ready.rc == 0
+      retries: 10
+      delay: 5
+      changed_when: false
+
+    - name: Add ubuntu user to docker group
+      ansible.builtin.user:
+        name: ubuntu
+        groups: docker
+        append: yes
+
+    - name: Pause for a few seconds
+      ansible.builtin.pause:
+        seconds: 10
+
     - name: Check Docker Version
       shell: docker version | grep -w Version | head -1
       register: version
     - debug:
         var: version
 
-    - name: Check Docker service status
-      command: systemctl status docker
-      register: docker_status
-    - debug:
-        var: docker_status.stdout
+    - name: Check Docker service status again
+      ansible.builtin.command: systemctl is-active docker
+      register: docker_active
+      until: docker_active.stdout == "active"
+      retries: 5
+      delay: 3
+      changed_when: false
   tags:
     - install
 
