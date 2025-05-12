@@ -17,6 +17,20 @@
       changed_when: false
       when: ansible_check_mode
 
+    - name: Check Docker service logs
+      ansible.builtin.command: journalctl -u docker --no-pager -n 50
+      register: docker_logs
+      ignore_errors: yes
+    - debug:
+        var: docker_logs.stdout
+
+    - name: Check systemd status
+      ansible.builtin.command: systemctl status docker --no-pager
+      register: docker_status
+      ignore_errors: yes
+    - debug:
+        var: docker_status.stdout
+
     - name: Ensure Docker is started and enabled
       ansible.builtin.service:
         name: docker

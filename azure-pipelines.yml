@@ -128,7 +128,7 @@ stages:
     jobs:
       - job: "Download_Secure_Files"
         displayName: "Download_Secure_Files"
-        timeoutInMinutes: 5
+        timeoutInMinutes: 15
         steps:
           - checkout: none
           - task: DownloadSecureFile@1
