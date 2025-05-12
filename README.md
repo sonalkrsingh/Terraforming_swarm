@@ -12,7 +12,7 @@
 
 This project demonstrates the end-to-end deployment of the [Docker Sample Voting App](https://github.com/dockersamples/example-voting-app) on a Docker Swarm cluster running on AWS EC2 instances. The infrastructure is provisioned using **Terraform**, baked with **Packer**, and automated through **Azure DevOps Pipelines** and **Ansible**.
 
-![Architecture Diagram](./azure devops architecture.jpg)
+![Architecture Diagram](./azure-devops-architecture.jpg)
 
 ---
 
@@ -43,7 +43,7 @@ This project demonstrates the end-to-end deployment of the [Docker Sample Voting
 
 The microservices deployed in the stack include:
 
-![Architecture Diagram](./voting app architecture.png)
+![App Architecture](./voting-app-architecture.png)
 
 - **Vote App:** A Python-based frontend for voting  
 - **Redis:** Stores the votes temporarily  
