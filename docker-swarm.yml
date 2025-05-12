@@ -6,6 +6,8 @@
   tasks:
     - name: Install Docker on all docker_servers
       shell: curl https://get.docker.com | bash
+      args:
+        creates: /usr/bin/docker
       when: not ansible_check_mode
     
     - name: Verify Docker service (check mode)
@@ -42,6 +44,10 @@
         name: docker
         state: started
         enabled: yes
+      register: docker_service
+      changed_when: 
+        - "'started' not in docker_service.status.state"
+        - "not docker_service.status.enabled"
       when: not ansible_check_mode
     
     - name: Wait for Docker daemon to be ready (actual run only)
@@ -74,16 +80,6 @@
         msg: "Docker version: {{ docker_version.stdout }}"
       when: not ansible_check_mode and docker_version.stdout | length > 0
 
-    - name: Check Docker service status again
-      ansible.builtin.command: systemctl is-active docker
-      register: docker_status
-      check_mode: no
-      ignore_errors: yes
-      until: docker_status.stdout == "active"
-      retries: 5
-      delay: 3
-      changed_when: false
-      when: not ansible_check_mode
   tags:
     - install
 
