@@ -233,8 +233,8 @@
 
     - name: Print access URLs
       shell: |
-        echo "Voting UI: http://{{ private_ip }}:5000" && \
-        echo "Results UI: http://{{ private_ip }}:5001"
+        echo "Voting UI: http://{{ private_ip.stdout }}:5000" && \
+        echo "Results UI: http://{{ private_ip.stdout }}:5001"
       register: app_urls
     - debug:
         var: app_urls.stdout
