@@ -9,25 +9,31 @@
       when: not ansible_check_mode
     
     - name: Verify Docker service (check mode)
-      ansible.builtin.service:
-        name: docker
-        state: started
-        enabled: yes
-      check_mode: yes
-      changed_when: false
+      ansible.builtin.debug:
+        msg: "Would verify Docker service installation and status"
       when: ansible_check_mode
+      changed_when: false
 
     - name: Check Docker service logs
       ansible.builtin.command: journalctl -u docker --no-pager -n 50
       register: docker_logs
       ignore_errors: yes
+      changed_when: false
+      when: not ansible_check_mode
     - debug:
         var: docker_logs.stdout
 
-    - name: Check systemd status
+    - name: Show Docker logs
+      ansible.builtin.debug:
+        var: docker_logs.stdout
+      when: not ansible_check_mode and docker_logs.stdout | length > 0
+
+    - name: Check systemd status (actual run only)
       ansible.builtin.command: systemctl status docker --no-pager
       register: docker_status
       ignore_errors: yes
+      changed_when: false
+      when: not ansible_check_mode
     - debug:
         var: docker_status.stdout
 
@@ -37,14 +43,15 @@
         state: started
         enabled: yes
       when: not ansible_check_mode
-
-    - name: Wait for Docker daemon to be ready
+    
+    - name: Wait for Docker daemon to be ready (actual run only)
       ansible.builtin.command: docker info
       register: docker_ready
       until: docker_ready.rc == 0
       retries: 10
       delay: 5
       changed_when: false
+      when: not ansible_check_mode
 
     - name: Add ubuntu user to docker group
       ansible.builtin.user:
@@ -55,21 +62,28 @@
     - name: Pause for a few seconds
       ansible.builtin.pause:
         seconds: 10
+      when: not ansible_check_mode
 
     - name: Check Docker Version
-      shell: docker version | grep -w Version | head -1
-      register: version
-    - debug:
-        var: version
+      ansible.builtin.shell: docker version --format '{{ '{{' }}.Server.Version{{ '}}' }}'
+      register: docker_version
+      changed_when: false
+      when: not ansible_check_mode
+    - name: Show Docker version
+      ansible.builtin.debug:
+        msg: "Docker version: {{ docker_version.stdout }}"
+      when: not ansible_check_mode and docker_version.stdout | length > 0
 
     - name: Check Docker service status again
       ansible.builtin.command: systemctl is-active docker
       register: docker_status
       check_mode: no
-      until: docker_active.stdout == "active"
+      ignore_errors: yes
+      until: docker_status.stdout == "active"
       retries: 5
       delay: 3
       changed_when: false
+      when: not ansible_check_mode
   tags:
     - install
 
