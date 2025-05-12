@@ -1,16 +1,18 @@
 ## 🏷️ Tags
-![CI/CD Pipeline](https://img.shields.io/badge/Topic-CI%2FCD%20Pipeline-blue)
-![Infrastructure](https://img.shields.io/badge/Topic-Infrastructure-green)
-![Architecture](https://img.shields.io/badge/Topic-Architecture-yellow)
+![Packer](https://img.shields.io/badge/Packer-AMI--Builder-blueviolet)
+![Terraform](https://img.shields.io/badge/Terraform-Infrastructure--as--Code-5C4EE5)
+![Ansible](https://img.shields.io/badge/Ansible-Configuration--Management-red)
+![Docker Swarm](https://img.shields.io/badge/Docker--Swarm-Container--Orchestration-blue)
+![Azure Pipelines](https://img.shields.io/badge/Azure--Pipelines-CI%2FCD-blue)
+![AWS](https://img.shields.io/badge/Deployed%20to-AWS-orange)
+![Status](https://img.shields.io/badge/Status-Production--Ready-brightgreen)
 
-
-![Azure Devops](https://github.com/user-attachments/assets/a9b32e1f-1bea-48b9-ac03-5e75daa04d4a)
 
 # 🗳️ Deploying Docker Voting App on AWS using Azure DevOps, Terraform, Packer & Ansible
 
 This project demonstrates the end-to-end deployment of the [Docker Sample Voting App](https://github.com/dockersamples/example-voting-app) on a Docker Swarm cluster running on AWS EC2 instances. The infrastructure is provisioned using **Terraform**, baked with **Packer**, and automated through **Azure DevOps Pipelines** and **Ansible**.
 
-![Architecture Diagram](./architecture-diagram.png)
+![Architecture Diagram](./azure devops architecture.jpg)
 
 ---
 
@@ -40,6 +42,8 @@ This project demonstrates the end-to-end deployment of the [Docker Sample Voting
 ## 🧱 Application Components (Docker Sample Voting App)
 
 The microservices deployed in the stack include:
+
+![Architecture Diagram](./voting app architecture.png)
 
 - **Vote App:** A Python-based frontend for voting  
 - **Redis:** Stores the votes temporarily  
