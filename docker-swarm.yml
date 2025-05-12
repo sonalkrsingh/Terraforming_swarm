@@ -6,12 +6,23 @@
   tasks:
     - name: Install Docker on all docker_servers
       shell: curl https://get.docker.com | bash
+      when: not ansible_check_mode
+    
+    - name: Verify Docker service (check mode)
+      ansible.builtin.service:
+        name: docker
+        state: started
+        enabled: yes
+      check_mode: yes
+      changed_when: false
+      when: ansible_check_mode
 
     - name: Ensure Docker is started and enabled
       ansible.builtin.service:
         name: docker
         state: started
         enabled: yes
+      when: not ansible_check_mode
 
     - name: Wait for Docker daemon to be ready
       ansible.builtin.command: docker info
