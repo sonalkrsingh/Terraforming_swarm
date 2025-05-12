@@ -22,9 +22,9 @@ pool:
 variables:
   - group: AWS_ACCESS_GROUP
   - name: PACKERBUILD
-    value: "YES"
-  - name: TERRAFORM_APPLY
     value: "NO"
+  - name: TERRAFORM_APPLY
+    value: "YES"
   - name: ANSIBLEJOB
     value: "NO"
   - name: TERRAFORM_DESTROY
