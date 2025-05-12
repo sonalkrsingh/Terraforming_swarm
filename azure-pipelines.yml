@@ -24,9 +24,9 @@ variables:
   - name: PACKERBUILD
     value: "NO"
   - name: TERRAFORM_APPLY
-    value: "YES"
-  - name: ANSIBLEJOB
     value: "NO"
+  - name: ANSIBLEJOB
+    value: "Yes"
   - name: TERRAFORM_DESTROY
     value: "NO"
   #- DESTROY: 'NO' #- Without Variable Group.
