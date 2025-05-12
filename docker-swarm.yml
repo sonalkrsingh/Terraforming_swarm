@@ -168,18 +168,18 @@
         docker service rm vote result worker redis db || true
       ignore_errors: yes
 
-    - name: Create network for voting app
-      shell: docker network create --driver overlay voting_network
-      ignore_errors: yes
-      
-    - name: Deploy Redis service
-      shell: |
-        docker service create \
-          --name redis \
-          --network voting_network \
-          --replicas 1 \
-          redis:alpine
-      ignore_errors: yes
+    # - name: Create network for voting app
+    #   shell: docker network create --driver overlay voting_network
+    #   ignore_errors: yes
+
+    # - name: Deploy Redis service
+    #   shell: |
+    #     docker service create \
+    #       --name redis \
+    #       --network voting_network \
+    #       --replicas 1 \
+    #       redis:alpine
+    #   ignore_errors: yes
 
     - name: Deploy Postgres database
       shell: |
