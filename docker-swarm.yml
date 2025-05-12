@@ -64,7 +64,8 @@
 
     - name: Check Docker service status again
       ansible.builtin.command: systemctl is-active docker
-      register: docker_active
+      register: docker_status
+      check_mode: no
       until: docker_active.stdout == "active"
       retries: 5
       delay: 3
