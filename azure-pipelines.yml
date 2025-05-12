@@ -153,7 +153,7 @@ stages:
             timeoutInMinutes: 2
           - script: ansible-playbook -i invfile docker-swarm.yml -u ubuntu -vv
             displayName: "Ansible_Docker_Swarm_Apply"
-            timeoutInMinutes: 5
+            timeoutInMinutes: 10
 
   - stage: "Download_Secure_Files_and_Terraform_Destroy_Variable"
     displayName: "Terraform Destroy & Download Secure Files"
